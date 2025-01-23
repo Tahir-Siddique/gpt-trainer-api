@@ -57,3 +57,24 @@ class MessageAPI(BaseAPI):
         endpoint = '/messages/delete'
         data = {"uuids": uuids}
         self._call_api('POST', endpoint, data)
+        
+    def stream_message(self, session_uuid: str, query: str) -> str:
+        """
+        Stream a message response for a session.
+        :param session_uuid: UUID of the session.
+        :param query: User's query to the chatbot.
+        :return: Streamed response as a single concatenated string.
+        """
+        endpoint = f'{self.endpoint_prefix}/{session_uuid}/message/stream'
+        data = {"query": query}
+        response = self._call_api('POST', endpoint, data, stream=True)
+
+        streamed_response = ""
+        if response.status_code == 200:
+            for line in response.iter_lines(decode_unicode=True):
+                if line:
+                    streamed_response += line
+        else:
+            raise Exception(f"Failed to stream message: {response.status_code}, {response.text}")
+
+        return streamed_response
