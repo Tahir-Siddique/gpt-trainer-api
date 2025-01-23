@@ -1,7 +1,7 @@
 from gpt_trainer.base import BaseAPI
 from gpt_trainer.data_source.source_models import Source
 from gpt_trainer.data_source.source_properties import SOURCE_PROPERTIES
-from typing import List
+from typing import List, Dict
 
 
 class SourceAPI(BaseAPI):
@@ -41,6 +41,44 @@ class SourceAPI(BaseAPI):
         response = self._call_api('GET', endpoint)
         return Source.from_dict(response.json())
 
+    def upload_file(self, chatbot_uuid: str, file_path: str) -> Source:
+        """
+        Upload a file as a data source for a chatbot.
+        :param chatbot_uuid: UUID of the chatbot.
+        :param file_path: Path to the file to upload.
+        :return: Source object.
+        """
+        endpoint = f'{self.endpoint_prefix}/{chatbot_uuid}/data-source/upload'
+        with open(file_path, 'rb') as f:
+            files = {'file': (file_path, f)}
+            response = self._call_api('POST', endpoint, files=files)
+        return Source.from_dict(response.json())
+
+    def upload_qa(self, chatbot_uuid: str, question: str, answer: str) -> Source:
+        """
+        Upload a QA pair as a data source for a chatbot.
+        :param chatbot_uuid: UUID of the chatbot.
+        :param question: The question for the QA pair.
+        :param answer: The answer for the QA pair.
+        :return: Source object.
+        """
+        endpoint = f'{self.endpoint_prefix}/{chatbot_uuid}/data-source/qa'
+        data = {"question": question, "answer": answer}
+        response = self._call_api('POST', endpoint, data)
+        return Source.from_dict(response.json())
+
+    def add_url(self, chatbot_uuid: str, url: str) -> Source:
+        """
+        Add a URL as a data source for a chatbot.
+        :param chatbot_uuid: UUID of the chatbot.
+        :param url: The URL to add.
+        :return: Source object.
+        """
+        endpoint = f'{self.endpoint_prefix}/{chatbot_uuid}/data-source/url'
+        data = {"url": url}
+        response = self._call_api('POST', endpoint, data)
+        return Source.from_dict(response.json())
+
     def update_source(self, source_uuid: str, title: str) -> Source:
         """
         Update the title of a specific source.
@@ -67,5 +105,14 @@ class SourceAPI(BaseAPI):
         :param uuids: List of source UUIDs to delete.
         """
         endpoint = '/data-sources/delete'
+        data = {"uuids": uuids}
+        self._call_api('POST', endpoint, data)
+
+    def re_scrape_sources(self, uuids: List[str]) -> None:
+        """
+        Re-scrape URLs for multiple data sources.
+        :param uuids: List of source UUIDs to re-scrape.
+        """
+        endpoint = '/data-sources/url/re-scrape'
         data = {"uuids": uuids}
         self._call_api('POST', endpoint, data)
