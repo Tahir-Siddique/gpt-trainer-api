@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="gpt_trainer_api",
-    version="0.2.1",  # Incremented to reflect new updates
+    version="0.2.3",
     description="Python client for interacting with the GPT Trainer API.",
     long_description=open("README.md", "r").read() + "\n\n" + open("CHANGELOG.md", "r").read(),
     long_description_content_type="text/markdown",
