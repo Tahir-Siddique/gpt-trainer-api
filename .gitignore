@@ -1,0 +1,17 @@
+# Build artifacts
+/dist/
+/build/
+/*.egg-info
+
+# Virtual environments
+/venv/
+/.env
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# Other
+.DS_Store
+*.log
